@@ -3,7 +3,7 @@
   <div v-if="items.length" class="slash-menu" role="listbox">
     <div class="slash-menu-head">
       <AppIcon name="terminal" :size="11" />
-      <span>Commands</span>
+      <span>{{ title }}</span>
       <span class="slash-menu-hint">↑↓ 选择 · Enter 确认 · Esc 关闭</span>
     </div>
 
@@ -43,6 +43,8 @@ defineProps({
   items: { type: Array, default: () => [] },
   /** 键盘高亮项下标 */
   activeIndex: { type: Number, default: 0 },
+  /** 面板标题：`/` 技能为 Skills、`@` 智能体为 Agents（同一面板两种触发） */
+  title: { type: String, default: 'Commands' },
 })
 
 const emit = defineEmits(['select', 'hover'])

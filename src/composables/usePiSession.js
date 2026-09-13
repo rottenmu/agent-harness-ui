@@ -108,12 +108,19 @@ function createPiSession() {
   /** 下一次发送采用的投递语义（composer 上的切换项） */
   const deliverAs = ref(DeliverAs.FOLLOW_UP)
 
-  /** 当前选中的模型与思考级别（composer 底部提示行展示） */
-  const model = ref('deepseek-chat')
+  /**
+   * 当前选中的模型与思考级别（composer 底部提示行展示）。
+   * 模型不再硬编码 —— 真实选项来自 /api/biz/ai/model-configs（useComposerResources），
+   * 选项到位后由控制台补第一次默认选中；硬编码的 'deepseek-chat' 可能根本不存在。
+   */
+  const model = ref('')
   const thinking = ref('medium')
 
   /** 启用的工具集 */
   const enabledTools = ref(['read_file', 'grep', 'write_file', 'exec_shell'])
+
+  /** 本次会话启用的 MCP 服务（配置 name 数组；composer 左下多选） */
+  const mcpServers = ref([])
 
   const logs = ref([])
   const query = ref('')
@@ -165,6 +172,10 @@ function createPiSession() {
       agentOptions.value = (agents || []).map((a) => ({
         label: `${a.name}（${a.agentType || '未知类型'}）`,
         value: a.id,
+        // 供 `@` 智能体菜单展示：名称不带类型后缀，类型与描述单独成列
+        name: a.name,
+        agentType: a.agentType || '',
+        desc: a.desc || '',
       }))
       if (!runtimeAgentId.value && agentOptions.value.length) {
         runtimeAgentId.value = agentOptions.value[0].value
@@ -795,7 +806,7 @@ function createPiSession() {
     status, statusTone, lastError, runningRunId, isCurrentRunning,
     items, artifacts, diffFiles, stats, contextStats, queuedMessages,
     // 配置
-    deliverAs, model, thinking, enabledTools, toggleTool,
+    deliverAs, model, thinking, mcpServers, enabledTools, toggleTool,
     // 传输驱动（契约实现注入，见 api/sessionDriver.js / sessionDriverHttp.js）
     setDriver, runtimeAgentId, agentOptions, setRuntimeAgent, loadRuntimeAgentOptions,
     // 日志

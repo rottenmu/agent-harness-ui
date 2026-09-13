@@ -80,11 +80,15 @@
           v-model:model="model"
           v-model:thinking="thinking"
           v-model:deliver-as="deliverAs"
+          v-model:mcp="mcpServers"
           :queued="queuedMessages"
-          :model-options="MODEL_OPTIONS"
+          :model-options="modelSelectOptions"
           :thinking-options="THINKING_OPTIONS"
+          :skills="skillMenuItems"
+          :agents="agentMenuItems"
+          :mcp-options="mcpSelectOptions"
           @send="onSend"
-          @command="onCommand"
+          @pick-agent="onPickAgent"
           @drop-queued="dropQueued"
         />
       </section>
@@ -209,8 +213,9 @@ import DiffPanel from './DiffPanel.vue'
 import LogPanel from './LogPanel.vue'
 import { SESSION_STATUS_META } from '@/api/sessionDriver'
 import { createHttpSessionDriver } from '@/api/sessionDriverHttp'
-import { MODEL_OPTIONS, THINKING_OPTIONS } from '@/mock/sessions'
+import { THINKING_OPTIONS } from '@/mock/sessions'
 import { usePiSession } from '@/composables/usePiSession'
+import { useComposerResources } from '@/composables/useComposerResources'
 import { CONNECTION, useBackend } from '@/composables/useBackend'
 
 const props = defineProps({
@@ -228,10 +233,32 @@ const {
   currentSession,
   status, statusTone, lastError, isCurrentRunning,
   items, artifacts, diffFiles, contextStats, queuedMessages,
-  deliverAs, model, thinking, enabledTools, logs,
+  deliverAs, model, thinking, mcpServers, logs,
   startRun, cancelCurrentRun, sendUserMessage, dropQueued, clearTrace, pushLog,
   setDriver, runtimeAgentId, agentOptions, setRuntimeAgent, loadRuntimeAgentOptions,
 } = usePiSession()
+
+/** Composer 四类真实资源（技能 / MCP / 模型配置；Agent 走 usePiSession 那份，不重复拉） */
+const { skillMenuItems, mcpSelectOptions, modelSelectOptions, ensureLoaded, loadError } = useComposerResources()
+
+/** `@` 菜单条目：与顶栏「执行 Agent」下拉同源（agentOptions），只做展示映射 */
+const agentMenuItems = computed(() =>
+  agentOptions.value.map((a) => ({
+    name: `@${a.name || a.label}`,
+    hint: a.agentType || '智能体',
+    detail: a.desc || '',
+    agent: a,
+  })),
+)
+
+/** 模型默认值不再硬编码：真实配置到位后补第一次选中（列表为空则保持为空） */
+watch(
+  modelSelectOptions,
+  (opts) => {
+    if (!model.value && opts.length) model.value = opts[0].value
+  },
+  { immediate: true },
+)
 
 /** 当前会话（模板里用 session 这个名字，比 currentSession 更短且不与 store 撞名） */
 const session = computed(() => currentSession.value)
@@ -265,6 +292,8 @@ watch(
       runtimeDriver.configure({ agentId: runtimeAgentId.value })
       setDriver(runtimeDriver)
       if (!agentOptions.value.length) loadRuntimeAgentOptions()
+      // 技能 / MCP / 模型配置与 Agent 同批补齐（内部幂等，已加载则跳过）
+      ensureLoaded()
     } else {
       setDriver(null)
       // 用户没开过评测工作台时没人触发过连接：控制台自己探测一次（幂等，
@@ -279,6 +308,11 @@ watch(
 
 /** 执行目标变化即时同步进驱动（缺 Agent 的运行会以 Failed 收场并提示） */
 watch(runtimeAgentId, (val) => runtimeDriver?.configure({ agentId: val || '' }))
+
+/** Composer 资源加载失败要可见：菜单/下拉为空时用户能知道为什么 */
+watch(loadError, (msg) => {
+  if (msg) pushLog('warn', `Composer 资源加载失败：${msg}`)
+})
 
 /* ---------------- 会话动作 ---------------- */
 
@@ -302,30 +336,16 @@ function onSend(text) {
 }
 
 /**
- * 命令面板的动作。
+ * `@` 菜单选中智能体。
  *
- * 命令的**实现**在这里而不在 Composer：Composer 只负责面板交互，
- * 让输入框反向依赖会话状态会让它无法单独复用（调试平台也用了同一个组件）。
+ * 实现不落在 Composer：切换执行目标是会话状态，Composer 只发意图，
+ * 这里与顶栏「执行 Agent」下拉走同一落点（setRuntimeAgent 内部会同步进驱动）。
  */
-function onCommand(item) {
-  if (!item) return
-  if (item.name === '/model' || item.name === '/thinking') {
-    const isModel = item.name === '/model'
-    const target = isModel ? model : thinking
-    const options = isModel ? MODEL_OPTIONS : THINKING_OPTIONS
-    const idx = options.findIndex((o) => o.value === target.value)
-    const next = options[(idx + 1) % options.length]
-    target.value = next.value
-    pushLog('info', `${item.name} 切换为 ${next.label}`)
-    return
-  }
-  if (item.name === '/tools') {
-    pushLog('info', `/tools 面板为延后项（见方案第九节），当前启用 ${enabledTools.value.length} 个工具`)
-    return
-  }
-  if (item.name === '/clear') {
-    clearTrace()
-  }
+function onPickAgent(item) {
+  const a = item?.agent
+  if (!a) return
+  setRuntimeAgent(a.value)
+  pushLog('info', `执行目标切换为 ${a.label}`)
 }
 
 /* ---------------- Diff 侧栏 ---------------- */
