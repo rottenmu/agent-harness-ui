@@ -1,0 +1,70 @@
+# ===== 依赖 =====
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+
+# ===== 构建产物 =====
+dist/
+dist-ssr/
+out/
+build/
+
+# ===== 单文件构建产物（本项目特有）=====
+single-file/
+single-file-debug/
+single-file-test.html
+single-file-debug-test.html
+
+# ===== Vite 临时 / 缓存 =====
+*.timestamp-*.mjs
+vite.config.js.timestamp-*
+.vite/
+.cache/
+
+# ===== 日志 =====
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dev-server.out.log
+dev-server.err.log
+
+# ===== 环境变量 =====
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ===== 编辑器 / IDE =====
+.vscode/
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 本地工具 / Agent 运行时 =====
+.workbuddy/
+.codegraph/
+.claude/
+.cursor/
+.codex/
+.superpowers/
+.agentscope/
+
+# ===== 测试产物 =====
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+*.png.tmp

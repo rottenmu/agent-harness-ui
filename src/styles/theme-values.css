@@ -1,0 +1,116 @@
+/* =============================================================================
+ * theme-values.css —— 全工程**唯一**允许出现裸色值的文件
+ *
+ * 分两块：`:root`（浅色）与 `:root.dark`（深色）。切换主题只需在 <html> 上
+ * 增删 `dark` 类，其余一切颜色都从这里的值派生（见 tokens.css 的 color-mix 语义层）。
+ *
+ * 深色块的 8 个值来自既有需求规范，标注为「需求固定，勿改」，不要调整：
+ *   页面 #14161a / 卡片 #1e2229 / 主色 #4096ff
+ *   Pass #36d399 / Fail #f87272 / Running #fbbf24
+ *   主文本 #e5e7eb / 次要文本 #9ca3af
+ *
+ * 浅色块是本轮新增的镜像取值：色相与深色对齐（同一套蓝/绿/红/琥珀），
+ * 只调整明度与对比度，保证在浅底上可读。深色下的 `--ink-strong` 取白、浅色下取黑，
+ * 这样 tokens.css 里所有 `color-mix(in srgb, var(--ink-strong) N%, transparent)`
+ * 派生的边框/叠加层会自动翻转，无需逐选择器覆写。
+ * ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---- 背景层级 ---- */
+  --bg-page: #f7f8fa;
+  --bg-sidebar: #f1f3f7;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #eef1f5;
+  --bg-sunken: #eceef3;
+
+  /* ---- 前景基准（供 color-mix 派生边框与叠加层） ---- */
+  --ink-strong: #1f2638;
+  --line: #e3e6ec;
+
+  /* ---- 语义色 ---- */
+  --primary: #1677ff;
+  --primary-hover: #4096ff;
+  --primary-pressed: #0958d9;
+  --primary-ink: #ffffff;
+
+  --pass: #1f9d63;
+  --fail: #d64545;
+  --running: #cf8a00;
+
+  /* ---- 文本 ---- */
+  --text-main: #1f2430;
+  --text-sub: #5f6675;
+  --text-faint: #8b93a3;
+  --text-code: #33405c;
+
+  /* ---- 代码 / 差异 / 摘要（这几个有真正独立的明暗取值） ---- */
+  --code-inline-bg: #f2f4f8;
+  --code-block-bg: #eef2f8;
+  --code-border: #dfe3eb;
+
+  --diff-header-bg: rgba(56, 132, 255, 0.08);
+
+  --summary-card-bg: linear-gradient(180deg, rgba(255, 247, 226, 0.92) 0%, rgba(255, 252, 244, 0.98) 100%);
+  --summary-card-border: rgba(210, 177, 98, 0.36);
+  --summary-eyebrow: #a45a18;
+
+  --find-match-bg: #fde68a;
+  --find-match-ink: #7a4b06;
+
+  /* ---- 阴影 ---- */
+  --shadow-sm: 0 2px 8px rgba(20, 27, 45, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 27, 45, 0.1);
+  --shadow-lg: 0 16px 48px rgba(20, 27, 45, 0.14);
+  --shadow-xl: 0 32px 80px rgba(20, 27, 45, 0.2);
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  /* 需求固定，勿改 */
+  --bg-page: #14161a;
+  --bg-card: #1e2229;
+  --primary: #4096ff;
+  --pass: #36d399;
+  --fail: #f87272;
+  --running: #fbbf24;
+  --text-main: #e5e7eb;
+  --text-sub: #9ca3af;
+
+  /* 以下为按深色重新取值 */
+  --bg-sidebar: #171a1f;
+  --bg-elevated: #232830;
+  --bg-hover: #262b33;
+  --bg-sunken: #101216;
+
+  --ink-strong: #f4f4f5;
+  --line: #2b3138;
+
+  --primary-hover: #69b1ff;
+  --primary-pressed: #1677ff;
+  --primary-ink: #ffffff;
+
+  --text-faint: #6b7280;
+  --text-code: #cbd5e1;
+
+  --code-inline-bg: rgba(255, 255, 255, 0.08);
+  --code-block-bg: rgba(0, 0, 0, 0.25);
+  --code-border: var(--line);
+
+  --diff-header-bg: rgba(56, 132, 255, 0.1);
+
+  --summary-card-bg: linear-gradient(180deg, rgba(71, 55, 28, 0.58) 0%, rgba(46, 38, 24, 0.78) 100%);
+  --summary-card-border: rgba(210, 177, 98, 0.22);
+  --summary-eyebrow: #f2cd79;
+
+  --find-match-bg: #854d0e;
+  --find-match-ink: #fde68a;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 32px 80px rgba(0, 0, 0, 0.6);
+}

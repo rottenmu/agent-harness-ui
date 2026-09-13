@@ -1,0 +1,61 @@
+# ============================================================
+# .ignore —— 通用忽略规则文件
+#
+# 与 .gitignore 语法一致（glob + ! 取反 + / 目录锚定），
+# 但受众更广：ripgrep（rg）、fd、ag、OmniSharp、vim/neovim 插件等
+# 搜索与语言服务工具会读取本文件来决定索引/搜索范围。
+#
+# 维护约定：本文件用于「不该被全文本搜索命中」的内容，
+#          体积类产物（node_modules / dist）两者都写；
+#          git 专属规则（如 .env 密钥保护）只写在 .gitignore。
+# ============================================================
+
+# ===== 依赖（避免搜索工具扫进几十万文件）=====
+node_modules/
+.pnpm-store/
+
+# ===== 构建产物 =====
+dist/
+dist-ssr/
+out/
+build/
+single-file/
+single-file-debug/
+
+# ===== Vite 临时 / 缓存 =====
+*.timestamp-*.mjs
+vite.config.js.timestamp-*
+.vite/
+.cache/
+
+# ===== 日志 =====
+*.log
+logs/
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# ===== 编辑器 / IDE =====
+.vscode/
+.idea/
+*.iml
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 本地工具 / Agent 运行时 =====
+.workbuddy/
+.codegraph/
+.claude/
+.cursor/
+.codex/
+.superpowers/
+.agentscope/
+
+# ===== 锁文件（搜索结果里噪音大，代码评审通常不看）=====
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

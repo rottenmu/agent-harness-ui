@@ -1,0 +1,139 @@
+/* =============================================================================
+ * tokens.css —— 尺度体系 + 派生语义层
+ *
+ * 本文件**不出现任何裸色值**（唯一的色值源是 theme-values.css）。
+ *
+ * 尺度体系取自参照项目 pi-gui 的 `apps/desktop/src/styles/tokens.css`
+ * （其注释自述 informed by the extracted Codex design system）：
+ *   · 4px 间距基准
+ *   · 紧凑 px 字号阶 11/12/14/15/16/20/28
+ *   · 圆角 ramp，其中 composer 22px / panel 24px 明显比卡片圆
+ *   · 边框 = 用前景色混出（color-mix），因此深浅主题自动翻转
+ *   · 半像素发丝描边 0 0 0 0.5px 是 Codex 的签名
+ *   · 动效 0.12 / 0.15 / 0.24s + cubic-bezier(0, 0, 0.2, 1)
+ *
+ * pi-gui 是「壳 + 上游 runtime」，本工程 runtime 是自研 modules/agent-harness，
+ * 因此这里只借它的尺度与派生写法，不复刻它的实现。
+ *
+ * ⚠️ 改这里的尺度请连带检查：正文行高上限 22px、字号只允许取 --text-* 档位、
+ *    padding/margin 必须为 4 的倍数 —— 这三条是可被判定的密度约束。
+ * ========================================================================== */
+
+:root {
+  /* ---- 间距（4px 基准） ---- */
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  /* ---- 圆角 ramp ---- */
+  --radius-2xs: 2px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+  --radius-3xl: 16px;
+  --radius-composer: 22px;
+  --radius-panel: 24px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* ---- 字号阶（紧凑，px 制） ---- */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 28px;
+
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --tracking-tight: -0.03em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+
+  /* ---- 字体栈 ---- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* ---- 动效 ---- */
+  --motion-fast: 0.12s;
+  --motion-base: 0.15s;
+  --motion-slow: 0.24s;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---- 边框三档：由前景色透明度混出，深浅自动翻转 ---- */
+  --border-light: color-mix(in srgb, var(--ink-strong) 5%, transparent);
+  --border-default: color-mix(in srgb, var(--ink-strong) 8%, transparent);
+  --border-heavy: color-mix(in srgb, var(--ink-strong) 13%, transparent);
+
+  /* 既有组件沿用的别名（勿删：10 个组件在引用） */
+  --border-soft: var(--border-default);
+  --border-strong: var(--border-heavy);
+
+  /* ---- 交互叠加层（同样由前景色混出） ---- */
+  --overlay-subtle: color-mix(in srgb, var(--ink-strong) 4%, transparent);
+  --overlay-hover: color-mix(in srgb, var(--ink-strong) 6%, transparent);
+  --overlay-active: color-mix(in srgb, var(--ink-strong) 9%, transparent);
+
+  /* ---- 强调色 tint ---- */
+  --accent-tint-bg: color-mix(in srgb, var(--primary) 12%, transparent);
+  --accent-tint-bg-strong: color-mix(in srgb, var(--primary) 16%, transparent);
+  --accent-tint-border: color-mix(in srgb, var(--primary) 32%, transparent);
+  --accent-rail: color-mix(in srgb, var(--primary) 90%, transparent);
+
+  /* ---- 焦点环 ---- */
+  --focus-ring-color: color-mix(in srgb, var(--primary) 32%, transparent);
+  --focus-ring: 0 0 0 3px var(--focus-ring-color);
+  --focus-ring-border: color-mix(in srgb, var(--primary) 45%, transparent);
+
+  /* ---- 状态色 tint ---- */
+  --success-tint-bg: color-mix(in srgb, var(--pass) 14%, transparent);
+  --success-tint-border: color-mix(in srgb, var(--pass) 32%, transparent);
+  --danger-tint-bg: color-mix(in srgb, var(--fail) 14%, transparent);
+  --danger-tint-border: color-mix(in srgb, var(--fail) 32%, transparent);
+  --warning-tint-bg: color-mix(in srgb, var(--running) 14%, transparent);
+  --warning-tint-border: color-mix(in srgb, var(--running) 32%, transparent);
+
+  /* ---- 语义状态信号 ----
+   * color = state, never decoration：绿=运行成功/存活、红=失败、琥珀=需注意、
+   * 灰=空闲、强调色=选中/未读。侧栏 / 时间线 / 差异 / 日志四处共用同一套语言。
+   */
+  --status-running: var(--running);
+  --status-success: var(--pass);
+  --status-error: var(--fail);
+  --status-warning: var(--running);
+  --status-neutral: color-mix(in srgb, var(--ink-strong) 34%, transparent);
+
+  /* ---- 差异行 ---- */
+  --diff-added-bg: color-mix(in srgb, var(--pass) 14%, transparent);
+  --diff-removed-bg: color-mix(in srgb, var(--fail) 14%, transparent);
+  --diff-added-ink: var(--pass);
+  --diff-removed-ink: var(--fail);
+  --diff-modified-ink: var(--running);
+
+  /* ---- 层级：发丝描边烘进阴影里（Codex 签名） ---- */
+  --elevation-hairline: 0 0 0 0.5px var(--border-heavy);
+  --elevation-popover: var(--elevation-hairline), var(--shadow-md);
+  --elevation-menu: var(--elevation-hairline), var(--shadow-lg);
+  --elevation-modal: var(--elevation-hairline), var(--shadow-xl);
+}
